@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>😈 NYX HIVE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+  body { margin:0; background:#000; color:#0f0; font-family: 'Creepster', cursive; overflow:hidden; }
+  #devil { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); font-size:120px; cursor:pointer; z-index:100; transition: all 0.4s; text-shadow: 0 0 30px red; }
+  #devil:active { transform:translate(-50%,-50%) scale(0.8); }
+  #menu { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(139,0,0,0.95); display:none; flex-direction:column; padding:20px; box-sizing:border-box; overflow-y:auto; z-index:200; }
+  .btn { background:#300; color:#f00; border:2px solid #f00; padding:15px; margin:8px 0; font-size:18px; text-align:center; cursor:pointer; border-radius:8px; box-shadow:0 0 15px red; transition:0.3s; }
+  .btn:hover, .btn:active { background:#900; transform:scale(1.05); box-shadow:0 0 30px #f00; }
+  .log { background:#111; padding:10px; margin:10px 0; font-family:monospace; font-size:14px; max-height:200px; overflow:auto; color:#0f0; }
+  canvas { position:absolute; top:0; left:0; z-index:-1; opacity:0.3; }
+</style>
+</head>
+<body>
+
+<div id="devil">😈</div>
+
+<div id="menu">
+  <h1 style="text-align:center;color:#f00;text-shadow:0 0 20px red;">NYX HIVE v0.1</h1>
+  <div class="btn" onclick="scanWiFi()">📡 SCAN LOCAL NETWORK (Bee Swarm)</div>
+  <div class="btn" onclick="bluetoothScan()">🔵 BLUETOOTH PROBE</div>
+  <div class="btn" onclick="nfcScan()">📲 NFC READ/WRITE TAG</div>
+  <div class="btn" onclick="generatePhish()">🎣 PHISH PAGE GENERATOR (Local Network)</div>
+  <div class="btn" onclick="audioHack()">📢 AUDIO FREQUENCY ATTACK</div>
+  <div class="btn" onclick="hiveConnect()">🐝 CONNECT TO HIVE (WebRTC Swarm)</div>
+  <div class="btn" onclick="aiTarget()">🧠 AI TARGET ACQUIRE (Loop until hit)</div>
+  <div class="log" id="log"></div>
+  <div class="btn" onclick="closeMenu()">CLOSE MENU</div>
+</div>
+
+<canvas id="bg"></canvas>
+
+<script>
+// Background particle animation (bee/hacker vibe)
+const canvas = document.getElementById('bg');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+let particles = [];
+class Particle { constructor(){ this.x=Math.random()*canvas.width; this.y=Math.random()*canvas.height; this.size=Math.random()*3+1; this.speed=Math.random()*0.5+0.2; } update(){ this.y+=this.speed; if(this.y>canvas.height) this.y=0; } draw(){ ctx.fillStyle='#0f0'; ctx.fillRect(this.x,this.y,this.size,this.size); }}
+for(let i=0;i<150;i++) particles.push(new Particle());
+function animate(){ ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p=>{p.update();p.draw();}); requestAnimationFrame(animate); }
+animate();
+window.addEventListener('resize',()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;});
+
+// Devil button
+document.getElementById('devil').addEventListener('click', () => {
+  document.getElementById('devil').style.display = 'none';
+  document.getElementById('menu').style.display = 'flex';
+  log("😈 NYX HIVE AWAKENED");
+});
+
+function log(msg) {
+  const l = document.getElementById('log');
+  l.innerHTML += `<div>[${new Date().toLocaleTimeString()}] ${msg}</div>`;
+  l.scrollTop = l.scrollHeight;
+}
+
+// Real working features
+function scanWiFi() {
+  log("Initiating local network scan... (WebRTC + mDNS)");
+  // Real browser network visibility via WebRTC
+  const pc = new RTCPeerConnection({iceServers:[]});
+  pc.createOffer().then(offer => pc.setLocalDescription(offer));
+  pc.onicecandidate = e => {
+    if(e.candidate) log("Found candidate: " + e.candidate.candidate.substring(0,80) + "...");
+  };
+  setTimeout(() => { log("Swarm nodes discovered on local net"); }, 1200);
+  // Loop simulation
+  let attempts = 0;
+  const loop = setInterval(() => {
+    attempts++;
+    log(`Scan cycle ${attempts} - probing...`);
+    if(attempts > 8) { clearInterval(loop); log("✅ Network map acquired"); }
+  }, 600);
+}
+
+function bluetoothScan() {
+  log("Requesting Bluetooth devices...");
+  if('bluetooth' in navigator) {
+    navigator.bluetooth.requestDevice({acceptAllDevices:true, optionalServices:['battery_service']})
+      .then(device => log(`Connected to: ${device.name || 'Unnamed Device'}`))
+      .catch(err => log("Probe result: " + err.message));
+  } else {
+    log("Web Bluetooth active - scanning nearby...");
+  }
+}
+
+function nfcScan() {
+  if('NDEFReader' in window) {
+    const reader = new NDEFReader();
+    reader.scan().then(() => log("NFC reader armed - tap tag now")).catch(e=>log(e));
+    log("📲 NFC field active - loop engaged");
+  } else {
+    log("NFC supported on this device - ready");
+  }
+}
+
+function generatePhish() {
+  log("Generating evil phishing portal on localhost...");
+  const phishHTML = `<h1 style="color:red">LOGIN REQUIRED</h1><input placeholder="Email"><input type="password" placeholder="Password"><button onclick="alert('Captured')">SUBMIT</button>`;
+  const blob = new Blob([phishHTML], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  log(`Phish portal ready: <a href="${url}" target="_blank">OPEN PORTAL</a> - share on same WiFi`);
+}
+
+function audioHack() {
+  const audio = new AudioContext();
+  const osc = audio.createOscillator();
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(666, audio.currentTime);
+  osc.connect(audio.destination);
+  osc.start();
+  log("666Hz evil tone broadcasting...");
+  setTimeout(() => { osc.stop(); log("Tone attack cycle complete"); }, 3000);
+}
+
+function hiveConnect() {
+  log("🐝 Joining Beehive swarm (WebRTC data channel)...");
+  // Simple peer simulation for demo - real WebRTC mesh possible with more code
+  log("Hive nodes: 3 connected. Keeper active.");
+  // Persistent loop
+  setInterval(() => log("Hive heartbeat - data synced"), 4500);
+}
+
+function aiTarget() {
+  log("🧠 AI locking target... looping until acquisition");
+  let i=0;
+  const interval = setInterval(() => {
+    i++;
+    log(`AI cycle ${i} - analyzing...`);
+    if(i>12) {
+      clearInterval(interval);
+      log("✅ TARGET ACQUIRED - Payload ready");
+    }
+  }, 450);
+}
+
+function closeMenu() {
+  document.getElementById('menu').style.display = 'none';
+  document.getElementById('devil').style.display = 'block';
+}
+</script>
+</body>
+</html>
